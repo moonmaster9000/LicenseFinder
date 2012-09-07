@@ -12,12 +12,12 @@ module LicenseFinder
     RUBY_URL_REGEX = %r{http://www.ruby-lang.org/en/LICENSE.txt}
 
     def body_type
-      if mit_license_body?
-        'mit'
-      elsif apache_license_body?
-        'apache'
-      elsif gplv2_license_body?
-        'gplv2'
+      license = LicenseFinder::License.all.detect do |lic|
+        lic.new(text).matches?
+      end
+
+      if license
+        license.name.gsub(/^.*::/, '').downcase
       elsif ruby_license_body?
         'ruby'
       elsif lgpl_license_body?
