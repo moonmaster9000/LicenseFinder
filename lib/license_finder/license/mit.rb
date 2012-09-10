@@ -5,8 +5,13 @@ class LicenseFinder::License::MIT < LicenseFinder::License::Base
   ONE_LINER_REGEX = /is released under the MIT license/
   URL_REGEX = %r{MIT Licence.*http://www.opensource.org/licenses/mit-license}
 
-  def matches?
+  def matches_body?
     !!cleaned_up(text).index(cleaned_up(LICENSE_TEXT)) ||
     !!(on_single_line(text) =~ URL_REGEX)
+  end
+
+  def matches_header?
+    header = text.split("\n").first
+    header && ((header.strip =~ HEADER_REGEX) || !!(on_single_line(text) =~ ONE_LINER_REGEX))
   end
 end

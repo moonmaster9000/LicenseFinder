@@ -10,12 +10,28 @@ module LicenseFinder::License
       def inherited(descendant)
         LicenseFinder::License.all << descendant
       end
+
+      def slug
+        name.gsub(/^.*::/, '').downcase
+      end
     end
 
     attr_reader :text
 
     def initialize(text)
       @text = text
+    end
+
+    def matches?
+      matches_body? || matches_header?
+    end
+
+    def matches_body?
+      false
+    end
+
+    def matches_header?
+      false
     end
 
     private

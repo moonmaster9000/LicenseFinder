@@ -38,28 +38,33 @@ describe LicenseFinder::GemSpecDetails do
   its(:dependency_version) { should == '2.1.3' }
   its(:install_path) { should == 'install/path' }
 
-  describe "#gemspec licenses" do
+  describe "#determine_license" do
     it "returns the license from the gemspec if provided" do
       mock_gemspec = @mock_gemspec.new
       stub(mock_gemspec).license { "MIT" }
       LicenseFinder::GemSpecDetails.new(mock_gemspec).determine_license.should == "MIT"
     end
 
-    it "returns 'ruby' if if is a ruby license" do
+    it "returns the matched license if detected" do
       mock_gemspec = @mock_gemspec.new
       mock_license_file = LicenseFinder::LicenseFile.new('gem', 'gem/license/path')
-      stub(mock_license_file).mit_license_body? { false }
-      stub(mock_license_file).mit_license_header? { false }
-      stub(mock_license_file).apache_license_body? { false }
-      stub(mock_license_file).gplv2_license_body? { false }
-
-      stub(mock_license_file).ruby_license_body? { true }
-
+      stub(mock_license_file).license { LicenseFinder::License::Ruby }
 
       gemspec_details = LicenseFinder::GemSpecDetails.new(mock_gemspec)
       stub(gemspec_details).license_files { [ mock_license_file ] }
 
       gemspec_details.determine_license.should == "ruby"
+    end
+
+    it "returns 'other' otherwise" do
+      mock_gemspec = @mock_gemspec.new
+      mock_license_file = LicenseFinder::LicenseFile.new('gem', 'gem/license/path')
+      stub(mock_license_file).license { nil }
+
+      gemspec_details = LicenseFinder::GemSpecDetails.new(mock_gemspec)
+      stub(gemspec_details).license_files { [ mock_license_file ] }
+
+      gemspec_details.determine_license.should == "other"
     end
   end
 
