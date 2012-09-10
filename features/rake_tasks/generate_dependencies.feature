@@ -29,3 +29,21 @@ Feature: rake license:generate_dependencies
     And I run "bundle exec rake license:action_items"
 
     Then I should not see "gpl_gem" in its output
+
+  Scenario: Application with non-gem dependency
+    Given I have a rails application with license finder
+    And my rails app depends on a file "JQuery.js" licensed with "MIT"
+    When I run "bundle exec rake license:generate_dependencies"
+
+    Then license finder should generate a file "dependencies.txt" that includes the following content:
+      """
+      JQuery.js 0.0.0, MIT
+      """
+
+    And license finder should generate a file "dependencies.yml" that includes the following content:
+      """
+      - name: "JQuery.js"
+        version: "0.0.0"
+        license: "MIT"
+        approved: true
+      """

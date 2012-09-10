@@ -29,6 +29,10 @@ Given /^my rails app depends on a gem "(.*?)" licensed with "(.*?)"$/ do |gem_na
   @user.add_dependency_to_app gem_name, license
 end
 
+Given /^my rails app depends on a file "(.*?)" licensed with "(.*?)"$/ do |file_name, license|
+  @user.add_nongem_dependency_to_app file_name, license
+end
+
 Given /^I whitelist the "(.*?)" license$/ do |license|
   @user.configure_license_finder_whitelist [license]
 end
@@ -129,6 +133,18 @@ module DSL
 
       Bundler.with_clean_env do
         `cd #{app_location} && echo \"gem '#{gem_name}', path: '../#{gem_name}'\" >> Gemfile && bundle`
+      end
+    end
+
+    def add_nongem_dependency_to_app(file_name, license)
+      File.open("#{app_location}/dependencies.yml", 'w') do |file|
+        file.write <<-DEPENDENCY
+---
+- name: "#{file_name}"
+  version: "0.0.0"
+  license: "#{license}"
+  approved: true
+        DEPENDENCY
       end
     end
 
