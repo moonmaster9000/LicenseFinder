@@ -18,9 +18,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency "bundler"
   s.add_development_dependency "rails", ">=3"
-  %w(rspec rake cucumber rails pry capybara).each do |gem|
+  %w(rake cucumber rails pry capybara).each do |gem|
     s.add_development_dependency gem
   end
+
+  s.add_development_dependency "rspec", ">= 2.12.0"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
